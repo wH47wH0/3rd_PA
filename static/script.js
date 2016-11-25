@@ -17,19 +17,17 @@ function StringGame(str, num) {
 }
 StringGame.prototype.slicer = function () {
 
-    var j = 0,
-        list = [],
-        element = "";
+    var list = [],
+        element = "",
+        self = this;
 
     $.each(this.str, function (i, v) {
-        if (i == 0 || i % this.num != 0) {
+        if (i == 0 || i % self.num != 0) {
             element += v;
-            list[j] = element;
         }
         else {
+            list.push(element);
             element = v;
-            j++;
-            list[j] = element;
         }
     });
     return list;
@@ -46,16 +44,14 @@ StringGame.prototype.colorist = function () {
 /**
  *  Placing elements into the DOM
  */
-function Placing(place, content) {
+function Display(place, content) {
     this.place = place;
     this.content = content;
-}
-Placing.prototype.single = function () {
 
     this.place.append('<p>' + this.content + '</p>');
     $('p').toggle().toggle(750);
 };
-Placing.prototype.multiple = function () {
+Display.prototype.multiple = function () {
 
     $.each(this.content, function (i, v) {
         this.place.append('<li>' + v + '</li>');
@@ -74,16 +70,18 @@ $(document).ready(function () {
     $('.btn').on('click', function () {
         $.getJSON('/calc', convertedData, function (data) {
             $.each(data, function (i, v) {
-                var pydata = new Placing($('.result'), v);
+                var pydata = new Display($('.result'), v);
                 typeof v == 'string' ? pydata.single() : pydata.multiple();
             })
         });
 
         alert('WTF');
         var input = new StringGame(convertedData._str, convertedData.num),
-            pimpedUpString = new Placing($('#JS'), input.colorist()),
-            blocks = new Placing($('#JS').find('.resultList'), input.slicer());
+            pimpedUpString = new Display($('#JS'), input.colorist()),
+            blocks = new Display($('#JS').find('.resultList'), input.slicer());
 
+}
+Display.prototype.single = function () {
         pimpedUpString.single();
         blocks.multiple()
     })
